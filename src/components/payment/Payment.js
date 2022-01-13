@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from "react";
 import axios from "../../axios";
 import "./Payment.css";
-import { Link, Navigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import CurrencyFormat from "react-currency-format";
 import { useStateValue } from "../../state/StateProvider";
 import { getBasketTotal } from "../../state/reducer";
 import CheckoutProduct from "../checkoutProduct/CheckoutProduct";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
+import { db } from "../../firebase";
 
 function Payment() {
+  const navigate = useNavigate();
   const [{ basket, user }, dispatch] = useStateValue();
 
   const [succeeded, setSucceeded] = useState(false);
@@ -36,6 +38,8 @@ function Payment() {
     getClientSecret();
   }, [basket]);
 
+  console.log("THE SECRET IS >>> ", clientSecret);
+
   const handleSubmit = async (e) => {
     // do all the fancy stripe things...
     e.preventDefault();
@@ -50,11 +54,25 @@ function Payment() {
       .then(({ paymentIntent }) => {
         // paymentIntent = payment confirmation
 
+        db.collection("users")
+          .doc(user?.uid)
+          .collection("orders")
+          .doc(paymentIntent.id)
+          .set({
+            basket: basket,
+            amount: paymentIntent.amount,
+            created: paymentIntent.created,
+          });
+
         setSucceeded(true);
         setError(null);
         setProcessing(false);
 
-        Navigate("/orders", { replace: true });
+        dispatch({
+          type: "EMPTY_BASKET",
+        });
+
+        navigate("/orders", { replace: true });
       });
   };
 
