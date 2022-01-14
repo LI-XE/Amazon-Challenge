@@ -11,9 +11,10 @@ import Payment from "./components/payment/Payment";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import Orders from "./components/orders/Orders";
+import { stripe_key } from "./key";
 
 const promise = loadStripe(
-  "pk_test_51KGIhFLdOZDJArv24aui5CRwl43qAYze2FeOn1IfkxCnGAxJkRczTb0uYoVTGKtf0dvtbofQY7JfYFzdS4j6SIZU000iOFFmbP"
+  `${stripe_key}`
 );
 
 function App() {

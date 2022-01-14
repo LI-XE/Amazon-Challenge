@@ -120,6 +120,7 @@ function Payment() {
             <h3>Payment Method</h3>
           </div>
           <div className="payment_details">
+            <h3>Card Details</h3>
             {/* Stripe */}
             <form onSubmit={handleSubmit}>
               <CardElement onChange={handleChange} />
